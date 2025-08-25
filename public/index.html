@@ -1,671 +1,574 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Bootcamp Changes</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .section {
-            margin-bottom: 40px;
-            padding: 25px;
-            border-radius: 12px;
-            border-left: 6px solid;
-        }
-        
-        .keep {
-            background: #e8f5e8;
-            border-left-color: #28a745;
-        }
-        
-        .cut {
-            background: #ffe6e6;
-            border-left-color: #dc3545;
-        }
-        
-        .section h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        
-        .section h3 {
-            font-size: 22px;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        
-        .keep-badge {
-            background: #28a745;
-            color: white;
-        }
-        
-        .cut-badge {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .current, .change, .why {
-            margin: 15px 0;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 18px;
-        }
-        
-        .current {
-            background: #f8f9fa;
-            border-left: 4px solid #6c757d;
-        }
-        
-        .change {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            font-weight: bold;
-        }
-        
-        .why {
-            background: #d1ecf1;
-            border-left: 4px solid #17a2b8;
-            font-style: italic;
-        }
-        
-        .label {
-            font-weight: bold;
-            color: #495057;
-            text-transform: uppercase;
-            font-size: 14px;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-        
-        .highlight {
-            background: #ffeb3b;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-        
-        .alternative {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border-left: 4px solid #2196f3;
-        }
-        
-        .alternative h4 {
-            color: #1976d2;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        
-        ul {
-            font-size: 18px;
-        }
-        
-        li {
-            margin-bottom: 8px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1 style="text-align: center; color: #2c3e50; font-size: 36px; margin-bottom: 30px;">🔄 SLIDE-BY-SLIDE CHANGES</h1>
-        
-        <!-- SLIDES 1-4 -->
-        <div class="section keep">
-            <span class="status-badge keep-badge">✅ KEEP THESE</span>
-            <h2>SLIDES 1-4: OPENING</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                Good intro, agenda, real tools promise, testimonials
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Nothing - this is perfect!</span> Maybe add one energy line: "In 2 hours, you'll build AI tools you can use Monday morning"
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                Sets expectations correctly and testimonials build credibility. People need to know what they're getting.
-            </div>
+import React, { useMemo, useState } from "react";
+
+// Life Insurance Lead Form – multi‑step, ad-landing ready
+// TailwindCSS only; self-contained. No external UI imports required.
+// Notes:
+// - Includes basic client-side validation and a lightweight review step
+// - UTM and tracking hooks (dataLayer/gtag) are scaffolded for ads attribution
+// - Copy + disclaimers are non-binding; replace with carrier-approved language
+
+export default function LifeInsuranceLeadForm() {
+  const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    state: "",
+    zip: "",
+    dob: "",
+    sex: "",
+    smoker: "no",
+    heightFt: "",
+    heightIn: "",
+    weight: "",
+
+    coverageType: "term",
+    coverageAmount: "250000",
+    termLength: "20",
+    beneficiaries: "",
+    existingCoverage: "no",
+    startTimeline: "30 days",
+
+    conditions: [],
+    meds: "",
+    dui5yr: "no",
+    familyHistory: "no",
+    highRiskJob: "no",
+    highRiskHobby: [],
+
+    contactMethod: "phone",
+    contactTime: "business hours",
+    consent: false,
+
+    // Hidden tracking/lead-routing (populate from URL params in production)
+    utm_source: "",
+    utm_campaign: "",
+    utm_medium: "",
+  });
+
+  const states = useMemo(() => [
+    "AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
+  ], []);
+
+  const coverageOptions = [
+    { label: "$50,000", value: "50000" },
+    { label: "$100,000", value: "100000" },
+    { label: "$250,000", value: "250000" },
+    { label: "$500,000", value: "500000" },
+    { label: "$1,000,000", value: "1000000" },
+  ];
+
+  const termOptions = [
+    { label: "10 years", value: "10" },
+    { label: "15 years", value: "15" },
+    { label: "20 years", value: "20" },
+    { label: "30 years", value: "30" },
+  ];
+
+  const highRiskHobbies = ["Skydiving","Scuba Diving","Racing","Climbing","Aviation (pilot)","None"];
+
+  const conditionsList = [
+    "None",
+    "High blood pressure",
+    "High cholesterol",
+    "Type 2 diabetes",
+    "Type 1 diabetes",
+    "Heart condition",
+    "Cancer history",
+    "Sleep apnea",
+  ];
+
+  function ageFromDOB(dob) {
+    if (!dob) return null;
+    const d = new Date(dob);
+    if (Number.isNaN(d.getTime())) return null;
+    const today = new Date();
+    let age = today.getFullYear() - d.getFullYear();
+    const m = today.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+    return age;
+  }
+
+  const est = useMemo(() => {
+    // Tiny, non-binding demo estimator just to show UX; replace with a real rate engine.
+    const age = ageFromDOB(form.dob) ?? 35;
+    const basePer100k = form.coverageType === "whole" ? 28 : 12; // placeholder monthly per $100k
+    const smokerFactor = form.smoker === "yes" ? 1.9 : 1.0;
+    const ageFactor = age > 50 ? 1.6 : age > 40 ? 1.3 : age > 30 ? 1.1 : 1.0;
+    const termFactor = form.coverageType === "term" ? (Number(form.termLength) / 20) * 1.0 : 1.0;
+    const units = Math.max(1, Math.round(Number(form.coverageAmount) / 100000));
+    const monthly = Math.round(basePer100k * units * smokerFactor * ageFactor * termFactor);
+    return { age, monthly };
+  }, [form]);
+
+  function update(key, value) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function toggleArrayField(key, value) {
+    setForm((prev) => {
+      const arr = new Set(prev[key] || []);
+      if (arr.has(value)) arr.delete(value); else arr.add(value);
+      return { ...prev, [key]: Array.from(arr) };
+    });
+  }
+
+  function validateStep(s) {
+    if (s === 1) {
+      const required = ["firstName","lastName","email","phone","state","zip","dob","sex","heightFt","heightIn","weight"];
+      return required.every((k) => String(form[k]).trim().length > 0) && /@/.test(form.email);
+    }
+    if (s === 2) {
+      if (form.coverageType === "term" && !form.termLength) return false;
+      return Boolean(form.coverageAmount);
+    }
+    if (s === 3) {
+      return true; // all optional on health step in this mock
+    }
+    if (s === 4) {
+      return form.consent === true && Boolean(form.contactMethod);
+    }
+    return true;
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!validateStep(step)) return;
+    if (step < 5) {
+      setStep(step + 1);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // In production: POST to your API/CRM (HubSpot, GoHighLevel, Airtable, etc.)
+      // Example payload:
+      const payload = { ...form, leadSource: "LandingPage", estMonthly: est.monthly };
+      console.log("Lead payload", payload);
+      // Tracking hooks
+      if (window && typeof window !== "undefined") {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: "lead_submit", leadVertical: "life_insurance", payload });
+        if (window.gtag) window.gtag("event", "conversion", { send_to: "AW-CONVERSION_ID" });
+        if (window.fbq) window.fbq("track", "Lead");
+      }
+      await new Promise((r) => setTimeout(r, 900));
+      setSubmitted(true);
+    } catch (err) {
+      alert("Submission failed. Please try again or call us.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="max-w-xl w-full bg-white rounded-2xl shadow p-8 text-center">
+          <h1 className="text-2xl font-semibold">Thanks! Your request is in.</h1>
+          <p className="mt-3 text-slate-600">A licensed advisor will review your details and reach out shortly with tailored options. If this is urgent, call <a href="tel:18001234567" className="underline">(800) 123‑4567</a>.</p>
+          <div className="mt-6 text-sm text-slate-500">Note: Estimates shown were illustrative only and not a binding offer. Final rates depend on underwriting.</div>
         </div>
-        
-        <!-- SLIDES 5-8 -->
-        <div class="section cut">
-            <span class="status-badge cut-badge">❌ CUT THIS ENTIRE SECTION</span>
-            <h2>SLIDES 5-8: "AI ISN'T THERE YET"</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                Talking about protein folding, ChatGPT statistics, "AI isn't there yet" messaging
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">DELETE completely</span> - jump straight to slide 8 "What can AI do for you?"
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                This makes people think AI <strong>can't help them right now</strong>. We want the OPPOSITE message! We're trying to get them excited to use AI, not convince them it's not ready.
-            </div>
-            
-            <div class="alternative">
-                <h4>🚀 BETTER ALTERNATIVE:</h4>
-                Replace with 1 slide showing recruiting success stories:
-                <ul>
-                    <li>"Sarah saved <strong>10 hours/week</strong> using AI for candidate outreach"</li>
-                    <li>"Tech startup filled <strong>5 positions 50% faster</strong> with AI screening"</li>
-                    <li>"Recruiting team increased <strong>response rates by 40%</strong> with AI-written emails"</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- SLIDES 9-11 -->
-        <div class="section cut">
-            <span class="status-badge cut-badge">❌ CUT TO 1 SLIDE</span>
-            <h2>SLIDES 9-11: EVOLUTION & ECONOMICS</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                3 slides about AI evolution (GPT-3 to GPT-4o to Agentic AI) and $15.7 trillion economic impact
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Combine into 1 slide:</span> "AI is HERE and WORKING for recruiters TODAY"
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                People don't need the history lesson - they need <strong>confidence it works NOW</strong>. The big economic numbers feel too abstract.
-            </div>
-            
-            <div class="alternative">
-                <h4>🎯 BETTER CONTENT:</h4>
-                <ul>
-                    <li><strong>LinkedIn:</strong> "73% of recruiters already using AI tools"</li>
-                    <li><strong>Real companies:</strong> "Hilton reduced time-to-hire from 42 days to 5 days with AI"</li>
-                    <li><strong>Your audience:</strong> "Average recruiter saves 15 hours/week with basic AI"</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- SLIDES 12-15 -->
-        <div class="section" style="background: #fff3e0; border-left-color: #ff9800;">
-            <span class="status-badge" style="background: #ff9800; color: white;">⚠️ MAKE INTERACTIVE</span>
-            <h2>SLIDES 12-15: DISCUSSION SECTIONS</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                Discussion questions on screen (What is AI? How does LLM work? Ethical considerations?)
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Use live polls</span> (Mentimeter/Slido) with real-time results showing on screen
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                Virtual audiences need <strong>engagement or they check email</strong>. Current format = people mute and multitask.
-            </div>
-            
-            <div class="alternative">
-                <h4>🗳️ NEW POLL QUESTIONS:</h4>
-                <ul>
-                    <li><strong>Word Cloud:</strong> "What takes you the most time in recruiting?" (sourcing, screening, emails, scheduling)</li>
-                    <li><strong>Multiple Choice:</strong> "Have you tried AI tools? A) Yes, love them B) Yes, didn't work C) Want to but don't know how D) Skeptical"</li>
-                    <li><strong>Ranking:</strong> "Which would save you the most time? Rank 1-4: Writing job posts, Finding candidates, Screening resumes, Writing outreach emails"</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- SLIDES 16-18 -->
-        <div class="section keep">
-            <span class="status-badge keep-badge">✅ KEEP BUT SHORTEN</span>
-            <h2>SLIDES 16-18: GPT CREATION THEORY</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                3 slides explaining how to build GPTs (writing instructions, giving examples, etc.)
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">1 slide with basics</span>, then jump straight to live demo building
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                People learn better by <strong>DOING than reading instructions</strong>. Theory without practice = forgettable.
-            </div>
-            
-            <div class="alternative">
-                <h4>🛠️ NEW APPROACH:</h4>
-                <ul>
-                    <li><strong>Quick theory:</strong> "3 parts to any GPT: Name, Instructions, Examples"</li>
-                    <li><strong>Then immediately:</strong> "Let's build one together right now"</li>
-                    <li><strong>Keep examples:</strong> The prompt templates are gold - use them IN the demo</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- SLIDES 19-22 -->
-        <div class="section" style="background: #e8f5e8; border-left-color: #ffd700;">
-            <span class="status-badge" style="background: #ffd700; color: #333;">⭐ EXPAND THIS SECTION</span>
-            <h2>SLIDES 19-22: LIVE DEMO - THE GOLD MINE!</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                Shows finished GPTs (The AI Recruiter, Talent Intelligence Agent)
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Build a GPT live while everyone follows along</span> - step by step, real time
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                This is the <strong>REAL VALUE</strong> - people actually building their own tool they can use Monday morning!
-            </div>
-            
-            <div class="alternative">
-                <h4>🎬 NEW LIVE DEMO PROCESS:</h4>
-                <ol style="font-size: 18px; background: #f0f8ff; padding: 20px; border-radius: 8px;">
-                    <li><strong>"Everyone open ChatGPT right now"</strong> (give them 30 seconds)</li>
-                    <li><strong>"We're building a 'Resume Screener' together"</strong></li>
-                    <li><strong>Share screen and build while they copy:</strong>
-                        <ul>
-                            <li>Click "Create GPT"</li>
-                            <li>Name: "Resume Screener Pro"</li>
-                            <li>Copy exact description from Mike's template</li>
-                            <li>Add the instruction prompts</li>
-                            <li>Test it with a sample resume</li>
-                        </ul>
-                    </li>
-                    <li><strong>Result:</strong> Everyone has a working tool in 15 minutes!</li>
-                </ol>
-                
-                <div style="background: #fffacd; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <strong>🏆 SUCCESS METRIC:</strong> "Raise your hand if your GPT just worked!" - aim for 80%+ hands up
-                </div>
-            </div>
-        </div>
-        
-        <!-- SLIDES 23-28 -->
-        <div class="section" style="background: #fff3e0; border-left-color: #ff9800;">
-            <span class="status-badge" style="background: #ff9800; color: white;">⚠️ COMBINE WITH ABOVE</span>
-            <h2>SLIDES 23-28: PROMPT ENGINEERING</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                Separate section teaching prompt writing and agent programming
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Teach prompts WHILE building the GPT</span> - don't separate theory from practice
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                <strong>Context makes it stick better</strong>. When they see the prompt working in their tool, they understand WHY it works.
-            </div>
-            
-            <div class="alternative">
-                <h4>🔗 INTEGRATION APPROACH:</h4>
-                <ul>
-                    <li><strong>Keep:</strong> The example prompts - these are excellent templates</li>
-                    <li><strong>Change:</strong> Use them AS you build, not before: "Now we'll add this outreach prompt..." </li>
-                    <li><strong>Second tool:</strong> Build "Interview Question Generator" using the agent programming approach</li>
-                    <li><strong>Takeaway:</strong> They leave with 2 working tools + understanding of how to make more</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- SLIDES 29-31 -->
-        <div class="section cut">
-            <span class="status-badge cut-badge">❌ CUT ANIMATION PART</span>
-            <h2>SLIDES 29-31: TRAINING & ANIMATION</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                How to train AI with examples + Synthesia animation demo + script writing
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Focus only on training with documents/examples</span> - cut the animation entirely
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                Animation is cool but <strong>not essential for recruiting workflow</strong>. Focus on what they'll actually use daily.
-            </div>
-            
-            <div class="alternative">
-                <h4>📚 KEEP THE TRAINING PART:</h4>
-                <ul>
-                    <li><strong>Upload examples:</strong> "Here's how to feed your GPT 10 great job descriptions"</li>
-                    <li><strong>Real use case:</strong> "Upload your company's best outreach emails to teach your AI your voice"</li>
-                    <li><strong>Quick demo:</strong> Show uploading "The AI Recruiter" book to the GPT for better responses</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- SLIDES 32-34 -->
-        <div class="section keep">
-            <span class="status-badge keep-badge">✅ KEEP BUT FOCUS</span>
-            <h2>SLIDES 32-34: DISCUSSION & TOOLS REVIEW</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                General discussion + overview of many AI tools (sourcing, screening, ATS, CRM)
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Focus on 3 tools maximum</span> with specific ROI info and pricing
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                <strong>Too many options = decision paralysis</strong>. People want "What should I try first?" not "Here are 20 tools."
-            </div>
-            
-            <div class="alternative">
-                <h4>🛠️ THE BIG 3 RECOMMENDATION:</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0;">
-                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px;">
-                        <h5 style="color: #28a745; margin-bottom: 10px;">1. ChatGPT Plus ($20/month)</h5>
-                        <strong>For:</strong> Custom GPTs, writing, screening<br>
-                        <strong>ROI:</strong> Saves 10 hours/week = $500/week value
-                    </div>
-                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px;">
-                        <h5 style="color: #856404; margin-bottom: 10px;">2. SeekOut ($119/month)</h5>
-                        <strong>For:</strong> Finding passive candidates<br>
-                        <strong>ROI:</strong> Find 3x more qualified candidates
-                    </div>
-                    <div style="background: #d1ecf1; padding: 15px; border-radius: 8px;">
-                        <h5 style="color: #0c5460; margin-bottom: 10px;">3. HireVue or Similar ($75/month)</h5>
-                        <strong>For:</strong> AI video screening<br>
-                        <strong>ROI:</strong> Screen 50 candidates in time it took for 10
-                    </div>
-                </div>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
-                    <strong>💰 TOTAL INVESTMENT:</strong> $214/month | <strong>🎯 POTENTIAL SAVINGS:</strong> $2,000+/month in time value
-                </div>
-            </div>
-        </div>
-        
-        <!-- SLIDES 35-37 -->
-        <div class="section keep">
-            <span class="status-badge keep-badge">✅ GOOD AS IS</span>
-            <h2>SLIDES 35-37: LEX DUO & NETWORKING</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                Product demo for Lex Duo platform + networking time
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Nothing major</span> - maybe add "Questions about what you built today?"
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                This is appropriate sales/networking. People expect this after getting value.
-            </div>
-            
-            <div class="alternative">
-                <h4>🤝 SMALL ENHANCEMENT:</h4>
-                <ul>
-                    <li><strong>Transition:</strong> "You just built 2 AI tools. Here's what we're building to take it further..."</li>
-                    <li><strong>Connection:</strong> "Raise your hand if you want help implementing this at your company"</li>
-                    <li><strong>Networking focus:</strong> "Share what tool you built and how you'll use it Monday"</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- SLIDES 38-42 -->
-        <div class="section" style="background: #e8f5e8; border-left-color: #28a745;">
-            <span class="status-badge keep-badge">✅ EXPAND THESE</span>
-            <h2>SLIDES 38-42: REFERENCE MATERIALS</h2>
-            
-            <div class="current">
-                <div class="label">📋 CURRENT:</div>
-                Basic reference charts for TA and TI tasks with sample prompts
-            </div>
-            
-            <div class="change">
-                <div class="label">🔄 CHANGE TO:</div>
-                <span class="highlight">Make these downloadable worksheets</span> with real company examples
-            </div>
-            
-            <div class="why">
-                <div class="label">💡 WHY:</div>
-                People want <strong>takeaways they can use Monday morning</strong>. Charts are nice, actionable templates are gold.
-            </div>
-            
-            <div class="alternative">
-                <h4>📋 NEW TAKEAWAY MATERIALS:</h4>
-                <div style="background: #f0f8ff; padding: 20px; border-radius: 8px;">
-                    <ol style="font-size: 18px;">
-                        <li><strong>"Copy-Paste Prompt Library"</strong> - 25 proven prompts for different recruiting tasks</li>
-                        <li><strong>"Tool Comparison Sheet"</strong> - The Big 3 tools with exact pricing, features, and ROI calculations</li>
-                        <li><strong>"30-Day Implementation Plan"</strong> - Week-by-week action items</li>
-                        <li><strong>"Success Metrics Tracker"</strong> - How to measure if your AI is working</li>
-                    </ol>
-                </div>
-                
-                <div style="background: #fffacd; padding: 15px; border-radius: 8px; margin-top: 15px;">
-                    <strong>🎁 BONUS:</strong> "AI Recruiting Wins" - Collection of real success stories with specific numbers and company names (with permission)
-                </div>
-            </div>
-        </div>
-        
-        <!-- NEW TIMING -->
-        <div class="section" style="background: #f3e5f5; border-left-color: #9c27b0;">
-            <span class="status-badge" style="background: #9c27b0; color: white;">⏰ NEW TIMING BREAKDOWN</span>
-            <h2>UPDATED 2-HOUR SCHEDULE</h2>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; margin: 20px 0;">
-                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; text-align: center;">
-                    <h4 style="color: #1976d2; margin-bottom: 10px;">INTRO/WHY AI</h4>
-                    <div style="font-size: 24px; font-weight: bold; color: #1976d2;">10 MIN</div>
-                    <div style="font-size: 14px; margin-top: 8px;">Success stories only</div>
-                </div>
-                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; text-align: center;">
-                    <h4 style="color: #28a745; margin-bottom: 10px;">LIVE GPT BUILDING</h4>
-                    <div style="font-size: 24px; font-weight: bold; color: #28a745;">45 MIN</div>
-                    <div style="font-size: 14px; margin-top: 8px;">Everyone builds 2 tools</div>
-                </div>
-                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; text-align: center;">
-                    <h4 style="color: #856404; margin-bottom: 10px;">TOOLS & ROI</h4>
-                    <div style="font-size: 24px; font-weight: bold; color: #856404;">25 MIN</div>
-                    <div style="font-size: 14px; margin-top: 8px;">The Big 3 with real numbers</div>
-                </div>
-                <div style="background: #fce4ec; padding: 15px; border-radius: 8px; text-align: center;">
-                    <h4 style="color: #c2185b; margin-bottom: 10px;">Q&A/NETWORK</h4>
-                    <div style="font-size: 24px; font-weight: bold; color: #c2185b;">25 MIN</div>
-                    <div style="font-size: 14px; margin-top: 8px;">Implementation planning</div>
-                </div>
-            </div>
-            
-            <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; text-align: center; margin-top: 20px;">
-                <h4 style="color: #28a745;">🎯 SUCCESS GOAL: Everyone leaves with 2 working AI tools they can use Monday morning!</h4>
-            </div>
-        </div>
-        
-        <!-- NEW SLIDES TO ADD -->
-        <div class="section" style="background: #f3e5f5; border-left-color: #9c27b0;">
-            <span class="status-badge" style="background: #9c27b0; color: white;">➕ NEW SLIDES TO CREATE TONIGHT</span>
-            <h2>SLIDES MIKE NEEDS TO ADD</h2>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                <div style="background: #fff3cd; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #856404;">📊 Slide 5A: "AI Success Stories"</h4>
-                    <ul style="font-size: 16px;">
-                        <li><strong>Hilton:</strong> 42 days → 5 days time-to-hire</li>
-                        <li><strong>Unilever:</strong> 75% faster screening with AI</li>
-                        <li><strong>IBM:</strong> 30% more diverse hires with AI tools</li>
-                        <li><strong>Your audience:</strong> "Average recruiter saves 15 hours/week"</li>
-                    </ul>
-                </div>
-                
-                <div style="background: #e3f2fd; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #1976d2;">🛠️ Slide 23A: "Build Along Checklist"</h4>
-                    <ul style="font-size: 16px;">
-                        <li>□ Open ChatGPT</li>
-                        <li>□ Click "Create GPT"</li>
-                        <li>□ Copy this name: "Resume Screener Pro"</li>
-                        <li>□ Paste this description: [exact text]</li>
-                        <li>□ Test with sample resume</li>
-                    </ul>
-                </div>
-                
-                <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #28a745;">📋 Slide 35A: "Monday Morning Action Plan"</h4>
-                    <div style="background: white; padding: 15px; border-radius: 4px; font-family: monospace;">
-                        Tool I'll try this week: ____________<br>
-                        Task I'll automate first: ____________<br>
-                        Success metric: ____________<br>
-                        Review date: ____________
-                    </div>
-                </div>
-                
-                <div style="background: #fce4ec; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #c2185b;">💰 Slide 33A: "ROI Calculator"</h4>
-                    <div style="font-size: 14px;">
-                        <strong>Your hourly rate:</strong> $______<br>
-                        <strong>Hours saved per week:</strong> ______<br>
-                        <strong>Weekly value:</strong> $______<br>
-                        <strong>Tool cost:</strong> $______<br>
-                        <strong>Monthly ROI:</strong> _______%
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- MATERIALS TO CREATE -->
-        <div class="section" style="background: #fff3e0; border-left-color: #ff9800;">
-            <span class="status-badge" style="background: #ff9800; color: white;">📝 MATERIALS TO CREATE TONIGHT</span>
-            <h2>DOWNLOADABLE RESOURCES FOR PARTICIPANTS</h2>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                <div style="background: #e3f2fd; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #1976d2;">📖 "Build Along" Handout</h4>
-                    <ul style="font-size: 16px;">
-                        <li>Step-by-step GPT creation guide</li>
-                        <li>Screenshots of each step</li>
-                        <li>Troubleshooting tips</li>
-                        <li>Copy-paste instructions</li>
-                    </ul>
-                </div>
-                
-                <div style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #28a745;">💬 Prompt Library PDF</h4>
-                    <ul style="font-size: 16px;">
-                        <li>25 copy-paste recruiting prompts</li>
-                        <li>Organized by task type</li>
-                        <li>Customization instructions</li>
-                        <li>Real examples with results</li>
-                    </ul>
-                </div>
-                
-                <div style="background: #fff3cd; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #856404;">🔍 Tool Comparison Sheet</h4>
-                    <ul style="font-size: 16px;">
-                        <li>The Big 3 tools with exact pricing</li>
-                        <li>Feature comparison chart</li>
-                        <li>ROI calculator for each</li>
-                        <li>Implementation difficulty rating</li>
-                    </ul>
-                </div>
-                
-                <div style="background: #fce4ec; padding: 20px; border-radius: 8px;">
-                    <h4 style="color: #c2185b;">📅 30-Day Implementation Plan</h4>
-                    <ul style="font-size: 16px;">
-                        <li>Week-by-week action items</li>
-                        <li>Success milestones</li>
-                        <li>Common pitfalls to avoid</li>
-                        <li>When to get help</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <!-- DELIVERY TIPS -->
-        <div class="section" style="background: #e8f5e8; border-left-color: #28a745;">
-            <span class="status-badge keep-badge">🎯 DELIVERY TIPS FOR MIKE</span>
-            <h2>HOW TO MAKE THIS LAND PERFECTLY</h2>
-            
-            <div style="background: #f0f8ff; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h4 style="color: #1976d2; margin-bottom: 15px;">🚀 OPENING ENERGY:</h4>
-                <div style="font-size: 18px; font-style: italic; color: #2c3e50;">
-                    "By the end of today, you'll have built 2 AI tools you can use Monday morning. We're not here to talk ABOUT AI - we're here to BUILD AI that makes you money."
-                </div>
-            </div>
-            
-            <div style="background: #fffacd; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h4 style="color: #856404; margin-bottom: 15px;">🙋‍♀️ MAKE IT INTERACTIVE:</h4>
-                <div style="font-size: 18px; font-style: italic; color: #2c3e50;">
-                    "Raise your hand if you've ever spent 3 hours writing one job description..." [wait for hands] "Keep it up if that job description got terrible candidates..." [more hands stay up] "This stops today."
-                </div>
-            </div>
-            
-            <div style="background: #e8f5e8; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h4 style="color: #28a745; margin-bottom: 15px;">👀 SHOW, DON'T TELL:</h4>
-                <div style="font-size: 18px; font-style: italic; color: #2c3e50;">
-                    Build everything live while they follow. When something works: "Did it work for you? Type 'YES' in chat!" Get that confirmation and energy.
-                </div>
-            </div>
-            
-            <div style="background: #fce4ec; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                <h4 style="color: #c2185b; margin-bottom: 15px;">📚 GIVE HOMEWORK:</h4>
-                <div style="font-size: 18px; font-style: italic; color: #2c3e50;">
-                    "Your challenge: Use your new GPT for 1 week and email me ONE success story. I'll feature the best ones in next month's bootcamp."
-                </div>
-            </div>
-            
-            <div style="background: #f3e5f5; padding: 25px; border-radius: 8px; text-align: center; margin: 20px 0;">
-                <h3 style="color: #9c27b0; margin-bottom: 15px;">🏆 ULTIMATE SUCCESS METRIC</h3>
-                <div style="font-size: 20px; font-weight: bold; color: #2c3e50;">
-                    "At the end: 'How many of you have a working AI tool right now?' - Aim for 80%+ hands!"
-                </div>
-            </div>
-        </div>
-        
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-start justify-center p-6">
+      <div className="w-full max-w-3xl">
+        <Header est={est} />
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mt-4">
+          <Progress step={step} />
+
+          {step === 1 && (
+            <StepBasics form={form} update={update} states={states} />
+          )}
+          {step === 2 && (
+            <StepCoverage form={form} update={update} coverageOptions={coverageOptions} termOptions={termOptions} />
+          )}
+          {step === 3 && (
+            <StepHealth form={form} update={update} conditionsList={conditionsList} highRiskHobbies={highRiskHobbies} toggleArrayField={toggleArrayField} />
+          )}
+          {step === 4 && (
+            <StepContact form={form} update={update} />
+          )}
+          {step === 5 && (
+            <StepReview form={form} est={est} />
+          )}
+
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => setStep((s) => Math.max(1, s - 1))}
+              className={`px-4 py-2 rounded-xl border ${step === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50'}`}
+              disabled={step === 1}
+            >
+              Back
+            </button>
+            {step < 5 ? (
+              <button
+                type="button"
+                onClick={() => validateStep(step) && setStep(step + 1)}
+                className={`px-5 py-2.5 rounded-xl text-white ${validateStep(step) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-300 cursor-not-allowed'}`}
+              >
+                Continue
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={submitting || !validateStep(4)}
+                className={`px-5 py-2.5 rounded-xl text-white ${submitting ? 'bg-slate-400' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+              >
+                {submitting ? 'Submitting…' : 'Get My Quotes'}
+              </button>
+            )}
+          </div>
+
+          <Disclaimer />
+        </form>
+      </div>
     </div>
-</body>
-</html>
+  );
+}
+
+function Header({ est }) {
+  return (
+    <div className="text-center">
+      <div className="inline-flex items-center gap-3 bg-white shadow px-4 py-2 rounded-full">
+        <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
+        <div className="text-sm text-slate-600">Licensed in all 50 states • Fast, no-obligation quotes</div>
+      </div>
+      <h1 className="mt-4 text-3xl md:text-4xl font-bold tracking-tight">Find Your Life Insurance Rate</h1>
+      <p className="mt-2 text-slate-600">Answer a few questions—get options across top carriers. No medical exam in many cases.</p>
+      <div className="mt-4 inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-1.5 rounded-full text-sm">
+        <span className="font-medium">Estimated from ${est.monthly}/mo</span>
+        <span className="text-emerald-700">(illustrative)</span>
+      </div>
+    </div>
+  );
+}
+
+function Progress({ step }) {
+  const labels = ["Basics","Coverage","Health","Contact","Review"];
+  return (
+    <div className="mb-6">
+      <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+        {labels.map((label, i) => (
+          <div key={label} className={`uppercase ${step - 1 >= i ? 'text-slate-700' : ''}`}>{label}</div>
+        ))}
+      </div>
+      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-full bg-blue-600 transition-all" style={{ width: `${(step - 1) * 25}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children, required }) {
+  return (
+    <label className="block mb-4">
+      <div className="mb-1 text-sm font-medium text-slate-700">
+        {label} {required && <span className="text-rose-600">*</span>}
+      </div>
+      {children}
+    </label>
+  );
+}
+
+function Input(props) {
+  return <input {...props} className={`w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-200 ${props.className || ''}`} />;
+}
+
+function Select({ children, ...props }) {
+  return (
+    <select {...props} className="w-full px-3 py-2 rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
+      {children}
+    </select>
+  );
+}
+
+function StepBasics({ form, update, states }) {
+  return (
+    <div>
+      <div className="grid md:grid-cols-2 gap-4">
+        <Field label="First name" required>
+          <Input value={form.firstName} onChange={(e) => update('firstName', e.target.value)} placeholder="Jane" />
+        </Field>
+        <Field label="Last name" required>
+          <Input value={form.lastName} onChange={(e) => update('lastName', e.target.value)} placeholder="Doe" />
+        </Field>
+        <Field label="Email" required>
+          <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="jane@example.com" />
+        </Field>
+        <Field label="Phone" required>
+          <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="(555) 555‑5555" />
+        </Field>
+        <Field label="State" required>
+          <Select value={form.state} onChange={(e) => update('state', e.target.value)}>
+            <option value="">Select state…</option>
+            {states.map((s) => <option key={s} value={s}>{s}</option>)}
+          </Select>
+        </Field>
+        <Field label="ZIP" required>
+          <Input value={form.zip} onChange={(e) => update('zip', e.target.value)} placeholder="12345" />
+        </Field>
+        <Field label="Date of birth" required>
+          <Input type="date" value={form.dob} onChange={(e) => update('dob', e.target.value)} />
+        </Field>
+        <Field label="Sex" required>
+          <Select value={form.sex} onChange={(e) => update('sex', e.target.value)}>
+            <option value="">Select…</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="nonbinary">Non-binary</option>
+            <option value="prefer_not">Prefer not to say</option>
+          </Select>
+        </Field>
+        <Field label="Smoker / nicotine in last 12 months?" required>
+          <Select value={form.smoker} onChange={(e) => update('smoker', e.target.value)}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </Select>
+        </Field>
+        <Field label="Height" required>
+          <div className="grid grid-cols-2 gap-2">
+            <Input value={form.heightFt} onChange={(e) => update('heightFt', e.target.value)} placeholder="ft" />
+            <Input value={form.heightIn} onChange={(e) => update('heightIn', e.target.value)} placeholder="in" />
+          </div>
+        </Field>
+        <Field label="Weight (lbs)" required>
+          <Input value={form.weight} onChange={(e) => update('weight', e.target.value)} placeholder="e.g., 165" />
+        </Field>
+      </div>
+    </div>
+  );
+}
+
+function StepCoverage({ form, update, coverageOptions, termOptions }) {
+  return (
+    <div>
+      <div className="grid md:grid-cols-2 gap-4">
+        <Field label="Coverage type" required>
+          <Select value={form.coverageType} onChange={(e) => update('coverageType', e.target.value)}>
+            <option value="term">Term</option>
+            <option value="whole">Whole Life</option>
+            <option value="final">Final Expense</option>
+            <option value="not_sure">Not sure — show both</option>
+          </Select>
+        </Field>
+        {form.coverageType === 'term' && (
+          <Field label="Term length" required>
+            <Select value={form.termLength} onChange={(e) => update('termLength', e.target.value)}>
+              {termOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </Select>
+          </Field>
+        )}
+        <Field label="Desired coverage amount" required>
+          <Select value={form.coverageAmount} onChange={(e) => update('coverageAmount', e.target.value)}>
+            {coverageOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </Select>
+        </Field>
+        <Field label="Beneficiaries (optional)">
+          <Input value={form.beneficiaries} onChange={(e) => update('beneficiaries', e.target.value)} placeholder="e.g., 2 (spouse + child)" />
+        </Field>
+        <Field label="Do you have existing coverage?">
+          <Select value={form.existingCoverage} onChange={(e) => update('existingCoverage', e.target.value)}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </Select>
+        </Field>
+        <Field label="When would you like coverage to start?">
+          <Select value={form.startTimeline} onChange={(e) => update('startTimeline', e.target.value)}>
+            <option>ASAP (this week)</option>
+            <option>30 days</option>
+            <option>60–90 days</option>
+            <option>Just comparing options</option>
+          </Select>
+        </Field>
+      </div>
+      <div className="mt-4 p-4 rounded-xl bg-slate-50 text-sm text-slate-700">
+        <div className="font-medium">Illustrative estimate</div>
+        <div>Based on your inputs, a rough estimate could be around <span className="font-semibold">${isNaN(est.monthly) ? '--' : est.monthly}/mo</span>. Actual rates depend on underwriting and carrier guidelines.</div>
+      </div>
+    </div>
+  );
+}
+
+function StepHealth({ form, update, conditionsList, highRiskHobbies, toggleArrayField }) {
+  return (
+    <div>
+      <div className="grid md:grid-cols-2 gap-4">
+        <Field label="Any of the following conditions?">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {conditionsList.map((c) => (
+              <label key={c} className={`px-3 py-2 rounded-xl border cursor-pointer ${form.conditions.includes(c) ? 'bg-blue-50 border-blue-300' : ''}`}>
+                <input
+                  type="checkbox"
+                  className="mr-2"
+                  checked={form.conditions.includes(c)}
+                  onChange={() => toggleArrayField('conditions', c)}
+                />
+                {c}
+              </label>
+            ))}
+          </div>
+        </Field>
+        <Field label="Current medications (optional)">
+          <Input value={form.meds} onChange={(e) => update('meds', e.target.value)} placeholder="List any ongoing medications" />
+        </Field>
+        <Field label="Any DUI in the last 5 years?">
+          <Select value={form.dui5yr} onChange={(e) => update('dui5yr', e.target.value)}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </Select>
+        </Field>
+        <Field label="Immediate family history of heart disease or cancer before age 60?">
+          <Select value={form.familyHistory} onChange={(e) => update('familyHistory', e.target.value)}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </Select>
+        </Field>
+        <Field label="High-risk occupation?">
+          <Select value={form.highRiskJob} onChange={(e) => update('highRiskJob', e.target.value)}>
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </Select>
+        </Field>
+        <Field label="Any high-risk hobbies?">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {highRiskHobbies.map((h) => (
+              <label key={h} className={`px-3 py-2 rounded-xl border cursor-pointer ${form.highRiskHobby.includes(h) ? 'bg-blue-50 border-blue-300' : ''}`}>
+                <input
+                  type="checkbox"
+                  className="mr-2"
+                  checked={form.highRiskHobby.includes(h)}
+                  onChange={() => toggleArrayField('highRiskHobby', h)}
+                />
+                {h}
+              </label>
+            ))}
+          </div>
+        </Field>
+      </div>
+    </div>
+  );
+}
+
+function StepContact({ form, update }) {
+  return (
+    <div>
+      <div className="grid md:grid-cols-2 gap-4">
+        <Field label="Preferred contact method" required>
+          <Select value={form.contactMethod} onChange={(e) => update('contactMethod', e.target.value)}>
+            <option value="phone">Phone call</option>
+            <option value="sms">Text message</option>
+            <option value="email">Email</option>
+          </Select>
+        </Field>
+        <Field label="Best time to reach you" required>
+          <Select value={form.contactTime} onChange={(e) => update('contactTime', e.target.value)}>
+            <option value="business hours">Business hours</option>
+            <option value="evenings">Evenings</option>
+            <option value="weekends">Weekends</option>
+          </Select>
+        </Field>
+        <Field label="Marketing consent (required)" required>
+          <label className="flex items-start gap-2 text-sm text-slate-700">
+            <input type="checkbox" checked={form.consent} onChange={(e) => update('consent', e.target.checked)} />
+            <span>
+              I agree to be contacted by phone, SMS, and email about life insurance options. Consent is not a condition of purchase. Message/data rates may apply.
+            </span>
+          </label>
+        </Field>
+        <Field label="Email updates (optional)">
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <input type="checkbox" onChange={(e) => update('newsletter', e.target.checked)} />
+            <span>Send me rate tips and policy guides.</span>
+          </label>
+        </Field>
+      </div>
+    </div>
+  );
+}
+
+function KeyValue({ k, v }) {
+  return (
+    <div className="flex justify-between py-2 border-b last:border-0">
+      <div className="text-slate-600">{k}</div>
+      <div className="font-medium">{v}</div>
+    </div>
+  );
+}
+
+function StepReview({ form, est }) {
+  const display = {
+    Name: `${form.firstName} ${form.lastName}`,
+    Email: form.email,
+    Phone: form.phone,
+    State: form.state,
+    ZIP: form.zip,
+    "DOB (age)": `${form.dob} (${ageStr(form.dob)})`,
+    Sex: pretty(form.sex),
+    Smoker: pretty(form.smoker),
+    Height: `${form.heightFt}ft ${form.heightIn}in`,
+    Weight: `${form.weight} lbs`,
+    Coverage: `${pretty(form.coverageType)} — $${Number(form.coverageAmount).toLocaleString()}${form.coverageType === 'term' ? ` / ${form.termLength} yrs` : ''}`,
+    Beneficiaries: form.beneficiaries || '—',
+    Existing: pretty(form.existingCoverage),
+    Timeline: form.startTimeline,
+    Estimate: `$${isNaN(est.monthly) ? '--' : est.monthly}/mo (illustrative)`,
+  };
+  return (
+    <div>
+      <div className="rounded-xl border p-4 bg-slate-50">
+        {Object.entries(display).map(([k, v]) => (
+          <KeyValue key={k} k={k} v={v} />
+        ))}
+      </div>
+      <p className="mt-3 text-sm text-slate-600">We will match your info with options from multiple carriers. A licensed advisor will confirm final eligibility and rates.</p>
+    </div>
+  );
+}
+
+function ageStr(dob) {
+  const a = (function() {
+    const d = new Date(dob);
+    if (Number.isNaN(d.getTime())) return null;
+    const today = new Date();
+    let age = today.getFullYear() - d.getFullYear();
+    const m = today.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+    return age;
+  })();
+  return a === null ? "—" : `${a}`;
+}
+
+function pretty(v) {
+  if (v === "term") return "Term";
+  if (v === "whole") return "Whole Life";
+  if (v === "final") return "Final Expense";
+  if (v === "not_sure") return "Not sure";
+  if (v === "yes") return "Yes";
+  if (v === "no") return "No";
+  if (v === "female") return "Female";
+  if (v === "male") return "Male";
+  if (v === "nonbinary") return "Non-binary";
+  if (v === "prefer_not") return "Prefer not to say";
+  return v;
+}
+
+function Disclaimer() {
+  return (
+    <div className="mt-8 text-xs text-slate-500 space-y-2">
+      <p>
+        By clicking Continue or Get My Quotes, you agree to our <a href="#" className="underline">Terms</a> and <a href="#" className="underline">Privacy Policy</a> and consent to be contacted by a licensed insurance representative at the number and email provided. Consent is not a condition of purchase. Message and data rates may apply.
+      </p>
+      <p>
+        Quotes and estimates shown are for illustration only and do not constitute an offer of insurance. Final eligibility and rates are determined by carriers based on underwriting.
+      </p>
+    </div>
+  );
+}
