@@ -1,576 +1,451 @@
-import React, { useMemo, useState } from "react";
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Insurance Strategies – Quick Quote</title>
+  <!-- Tailwind via CDN for quick mockups -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {} } };
+  </script>
+  <!-- React + ReactDOM UMD -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel for in-browser JSX transform (dev/prototyping only) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50">
+  <div id="root"></div>
 
-const BRAND = { name: "Insurance Strategies", primary: "#233447", accent: "#0EA5E9", tagline: "Compare top carriers. Get your rate in minutes." };
+  <script type="text/babel">
+    // Brand
+    const BRAND = { name: "Insurance Strategies", primary: "#233447", accent: "#0EA5E9", tagline: "Compare top carriers. Get your rate in minutes." };
 
-// Life Insurance Lead Form – multi‑step, ad-landing ready
-// TailwindCSS only; self-contained. No external UI imports required.
-// Notes:
-// - Includes basic client-side validation and a lightweight review step
-// - UTM and tracking hooks (dataLayer/gtag) are scaffolded for ads attribution
-// - Copy + disclaimers are non-binding; replace with carrier-approved language
+    // ---------- Helpers ----------
+    const { useMemo, useState } = React;
 
-export default function LifeInsuranceLeadForm() {
-  const [step, setStep] = useState(1);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    state: "",
-    zip: "",
-    dob: "",
-    sex: "",
-    smoker: "no",
-    heightFt: "",
-    heightIn: "",
-    weight: "",
-
-    coverageType: "term",
-    coverageAmount: "250000",
-    termLength: "20",
-    beneficiaries: "",
-    existingCoverage: "no",
-    startTimeline: "30 days",
-
-    conditions: [],
-    meds: "",
-    dui5yr: "no",
-    familyHistory: "no",
-    highRiskJob: "no",
-    highRiskHobby: [],
-
-    contactMethod: "phone",
-    contactTime: "business hours",
-    consent: false,
-
-    // Hidden tracking/lead-routing (populate from URL params in production)
-    utm_source: "",
-    utm_campaign: "",
-    utm_medium: "",
-  });
-
-  const states = useMemo(() => [
-    "AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
-  ], []);
-
-  const coverageOptions = [
-    { label: "$50,000", value: "50000" },
-    { label: "$100,000", value: "100000" },
-    { label: "$250,000", value: "250000" },
-    { label: "$500,000", value: "500000" },
-    { label: "$1,000,000", value: "1000000" },
-  ];
-
-  const termOptions = [
-    { label: "10 years", value: "10" },
-    { label: "15 years", value: "15" },
-    { label: "20 years", value: "20" },
-    { label: "30 years", value: "30" },
-  ];
-
-  const highRiskHobbies = ["Skydiving","Scuba Diving","Racing","Climbing","Aviation (pilot)","None"];
-
-  const conditionsList = [
-    "None",
-    "High blood pressure",
-    "High cholesterol",
-    "Type 2 diabetes",
-    "Type 1 diabetes",
-    "Heart condition",
-    "Cancer history",
-    "Sleep apnea",
-  ];
-
-  function ageFromDOB(dob) {
-    if (!dob) return null;
-    const d = new Date(dob);
-    if (Number.isNaN(d.getTime())) return null;
-    const today = new Date();
-    let age = today.getFullYear() - d.getFullYear();
-    const m = today.getMonth() - d.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
-    return age;
-  }
-
-  const est = useMemo(() => {
-    // Tiny, non-binding demo estimator just to show UX; replace with a real rate engine.
-    const age = ageFromDOB(form.dob) ?? 35;
-    const basePer100k = form.coverageType === "whole" ? 28 : 12; // placeholder monthly per $100k
-    const smokerFactor = form.smoker === "yes" ? 1.9 : 1.0;
-    const ageFactor = age > 50 ? 1.6 : age > 40 ? 1.3 : age > 30 ? 1.1 : 1.0;
-    const termFactor = form.coverageType === "term" ? (Number(form.termLength) / 20) * 1.0 : 1.0;
-    const units = Math.max(1, Math.round(Number(form.coverageAmount) / 100000));
-    const monthly = Math.round(basePer100k * units * smokerFactor * ageFactor * termFactor);
-    return { age, monthly };
-  }, [form]);
-
-  function update(key, value) {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function toggleArrayField(key, value) {
-    setForm((prev) => {
-      const arr = new Set(prev[key] || []);
-      if (arr.has(value)) arr.delete(value); else arr.add(value);
-      return { ...prev, [key]: Array.from(arr) };
-    });
-  }
-
-  function validateStep(s) {
-    if (s === 1) {
-      const required = ["firstName","lastName","email","phone","state","zip","dob","sex","heightFt","heightIn","weight"];
-      return required.every((k) => String(form[k]).trim().length > 0) && /@/.test(form.email);
+    function ageFromDOB(dob) {
+      if (!dob) return null;
+      const d = new Date(dob);
+      if (Number.isNaN(d.getTime())) return null;
+      const today = new Date();
+      let age = today.getFullYear() - d.getFullYear();
+      const m = today.getMonth() - d.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+      return age;
     }
-    if (s === 2) {
-      if (form.coverageType === "term" && !form.termLength) return false;
-      return Boolean(form.coverageAmount);
-    }
-    if (s === 3) {
-      return true; // all optional on health step in this mock
-    }
-    if (s === 4) {
-      return form.consent === true && Boolean(form.contactMethod);
-    }
-    return true;
-  }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!validateStep(step)) return;
-    if (step < 5) {
-      setStep(step + 1);
-      return;
+    function pretty(v){
+      if (v === "term") return "Term";
+      if (v === "whole") return "Whole Life";
+      if (v === "final") return "Final Expense";
+      if (v === "not_sure") return "Not sure";
+      if (v === "yes") return "Yes";
+      if (v === "no") return "No";
+      if (v === "female") return "Female";
+      if (v === "male") return "Male";
+      if (v === "nonbinary") return "Non-binary";
+      if (v === "prefer_not") return "Prefer not to say";
+      return v;
     }
-    setSubmitting(true);
-    try {
-      // In production: POST to your API/CRM (HubSpot, GoHighLevel, Airtable, etc.)
-      // Example payload:
-      const payload = { ...form, leadSource: "LandingPage", estMonthly: est.monthly };
-      console.log("Lead payload", payload);
-      // Tracking hooks
-      if (window && typeof window !== "undefined") {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ event: "lead_submit", leadVertical: "life_insurance", payload });
-        if (window.gtag) window.gtag("event", "conversion", { send_to: "AW-CONVERSION_ID" });
-        if (window.fbq) window.fbq("track", "Lead");
+
+    // ---------- Components ----------
+    function LifeInsuranceLeadForm() {
+      const [step, setStep] = useState(1);
+      const [submitting, setSubmitting] = useState(false);
+      const [submitted, setSubmitted] = useState(false);
+
+      const [form, setForm] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        state: "",
+        zip: "",
+        dob: "",
+        sex: "",
+        smoker: "no",
+        heightFt: "",
+        heightIn: "",
+        weight: "",
+
+        coverageType: "term",
+        coverageAmount: "250000",
+        termLength: "20",
+        beneficiaries: "",
+        existingCoverage: "no",
+        startTimeline: "30 days",
+
+        conditions: [],
+        meds: "",
+        dui5yr: "no",
+        familyHistory: "no",
+        highRiskJob: "no",
+        highRiskHobby: [],
+
+        contactMethod: "phone",
+        contactTime: "business hours",
+        consent: false,
+
+        utm_source: "",
+        utm_campaign: "",
+        utm_medium: "",
+      });
+
+      const states = useMemo(() => [
+        "AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
+      ], []);
+
+      const coverageOptions = [
+        { label: "$50,000", value: "50000" },
+        { label: "$100,000", value: "100000" },
+        { label: "$250,000", value: "250000" },
+        { label: "$500,000", value: "500000" },
+        { label: "$1,000,000", value: "1000000" },
+      ];
+
+      const termOptions = [
+        { label: "10 years", value: "10" },
+        { label: "15 years", value: "15" },
+        { label: "20 years", value: "20" },
+        { label: "30 years", value: "30" },
+      ];
+
+      const highRiskHobbies = ["Skydiving","Scuba Diving","Racing","Climbing","Aviation (pilot)","None"];
+      const conditionsList = ["None","High blood pressure","High cholesterol","Type 2 diabetes","Type 1 diabetes","Heart condition","Cancer history","Sleep apnea"];
+
+      const est = useMemo(() => {
+        const age = ageFromDOB(form.dob) ?? 35;
+        const basePer100k = form.coverageType === "whole" ? 28 : 12; // placeholder
+        const smokerFactor = form.smoker === "yes" ? 1.9 : 1.0;
+        const ageFactor = age > 50 ? 1.6 : age > 40 ? 1.3 : age > 30 ? 1.1 : 1.0;
+        const termFactor = form.coverageType === "term" ? (Number(form.termLength) / 20) * 1.0 : 1.0;
+        const units = Math.max(1, Math.round(Number(form.coverageAmount) / 100000));
+        const monthly = Math.round(basePer100k * units * smokerFactor * ageFactor * termFactor);
+        return { age, monthly };
+      }, [form]);
+
+      function update(key, value){ setForm(prev => ({ ...prev, [key]: value })); }
+      function toggleArrayField(key, value){ setForm(prev => { const s = new Set(prev[key]||[]); s.has(value)?s.delete(value):s.add(value); return { ...prev, [key]: Array.from(s) }; }); }
+
+      function validateStep(s){
+        if (s === 1){
+          const req = ["firstName","lastName","email","phone","state","zip","dob","sex","heightFt","heightIn","weight"];
+          return req.every(k => String(form[k]).trim()) && /@/.test(form.email);
+        }
+        if (s === 2){
+          if (form.coverageType === "term" && !form.termLength) return false; return Boolean(form.coverageAmount);
+        }
+        if (s === 3){ return true; }
+        if (s === 4){ return form.consent === true && Boolean(form.contactMethod); }
+        return true;
       }
-      await new Promise((r) => setTimeout(r, 900));
-      setSubmitted(true);
-    } catch (err) {
-      alert("Submission failed. Please try again or call us.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <div className="max-w-xl w-full bg-white rounded-2xl shadow p-8 text-center">
-          <h1 className="text-2xl font-semibold">Thanks! Your request is in.</h1>
-          <p className="mt-3 text-slate-600">A licensed advisor will review your details and reach out shortly with tailored options. If this is urgent, call <a href="tel:18001234567" className="underline">(800) 123‑4567</a>.</p>
-          <div className="mt-6 text-sm text-slate-500">Note: Estimates shown were illustrative only and not a binding offer. Final rates depend on underwriting.</div>
+      async function handleSubmit(e){
+        e.preventDefault();
+        if (!validateStep(step)) return;
+        if (step < 5){ setStep(step + 1); return; }
+        setSubmitting(true);
+        try {
+          const payload = { ...form, leadSource: "LandingPage", estMonthly: est.monthly };
+          console.log("Lead payload", payload);
+          if (typeof window !== 'undefined'){
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ event: 'lead_submit', leadVertical: 'life_insurance', payload });
+            if (window.gtag) window.gtag('event','conversion',{ send_to: 'AW-CONVERSION_ID' });
+            if (window.fbq) window.fbq('track','Lead');
+          }
+          await new Promise(r => setTimeout(r, 900));
+          setSubmitted(true);
+        } catch(err){
+          alert('Submission failed. Please try again or call us.');
+        } finally { setSubmitting(false); }
+      }
+
+      if (submitted){
+        return (
+          <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+            <div className="max-w-xl w-full bg-white rounded-2xl shadow p-8 text-center">
+              <h1 className="text-2xl font-semibold">Thanks! Your request is in.</h1>
+              <p className="mt-3 text-slate-600">A licensed advisor will review your details and reach out shortly with tailored options. If this is urgent, call <a href="tel:18001234567" className="underline">(800) 123‑4567</a>.</p>
+              <div className="mt-6 text-sm text-slate-500">Note: Estimates shown were illustrative only and not a binding offer. Final rates depend on underwriting.</div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-start justify-center p-6">
+          <div className="w-full max-w-3xl">
+            <Header est={est} />
+            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mt-4">
+              <Progress step={step} />
+
+              {step === 1 && (<StepBasics form={form} update={update} states={states} />)}
+              {step === 2 && (<StepCoverage form={form} update={update} coverageOptions={coverageOptions} termOptions={termOptions} est={est} />)}
+              {step === 3 && (<StepHealth form={form} update={update} conditionsList={conditionsList} highRiskHobbies={highRiskHobbies} toggleArrayField={toggleArrayField} />)}
+              {step === 4 && (<StepContact form={form} update={update} />)}
+              {step === 5 && (<StepReview form={form} est={est} />)}
+
+              <div className="mt-6 flex items-center justify-between gap-3">
+                <button type="button" onClick={() => setStep(s => Math.max(1, s - 1))} className={`px-4 py-2 rounded-xl border ${step === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50'}`} disabled={step === 1}>Back</button>
+                {step < 5 ? (
+                  <button type="button" onClick={() => validateStep(step) && setStep(step + 1)} className={`px-5 py-2.5 rounded-xl text-white ${validateStep(step) ? 'bg-[#233447] hover:bg-[#1b2938]' : 'bg-slate-300 cursor-not-allowed'}`}>Continue</button>
+                ) : (
+                  <button type="submit" disabled={submitting || !validateStep(4)} className={`px-5 py-2.5 rounded-xl text-white ${submitting ? 'bg-slate-400' : 'bg-[#233447] hover:bg-[#1b2938]'}`}>{submitting ? 'Submitting…' : 'Get My Quotes'}</button>
+                )}
+              </div>
+
+              <Disclaimer />
+            </form>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-start justify-center p-6">
-      <div className="w-full max-w-3xl">
-        <Header est={est} />
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mt-4">
-          <Progress step={step} />
+    function Header({ est }){
+      return (
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-3">
+            <div className="rounded-full w-10 h-10 flex items-center justify-center text-white" style={{ backgroundColor: BRAND.primary }}>IS</div>
+            <div className="text-2xl font-bold" style={{ color: BRAND.primary }}>{BRAND.name}</div>
+          </div>
+          <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight">{BRAND.tagline}</h1>
+          <p className="mt-2 text-slate-600">Term, Whole & Final Expense • Licensed nationwide</p>
+          <div className="mt-4 inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-1.5 rounded-full text-sm">
+            <span className="font-medium">Estimated from ${est.monthly}/mo</span>
+            <span className="text-emerald-700">(illustrative)</span>
+          </div>
+        </div>
+      );
+    }
 
-          {step === 1 && (
-            <StepBasics form={form} update={update} states={states} />
-          )}
-          {step === 2 && (
-            <StepCoverage form={form} update={update} coverageOptions={coverageOptions} termOptions={termOptions} est={est} />
-          )}
-          {step === 3 && (
-            <StepHealth form={form} update={update} conditionsList={conditionsList} highRiskHobbies={highRiskHobbies} toggleArrayField={toggleArrayField} />
-          )}
-          {step === 4 && (
-            <StepContact form={form} update={update} />
-          )}
-          {step === 5 && (
-            <StepReview form={form} est={est} />
-          )}
+    function Progress({ step }){
+      const labels = ["Basics","Coverage","Health","Contact","Review"];
+      return (
+        <div className="mb-6">
+          <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+            {labels.map((label,i) => (
+              <div key={label} className={`uppercase ${step - 1 >= i ? 'text-slate-700' : ''}`}>{label}</div>
+            ))}
+          </div>
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div className="h-full bg-[#233447] transition-all" style={{ width: `${(step - 1) * 25}%` }} />
+          </div>
+        </div>
+      );
+    }
 
-          <div className="mt-6 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setStep((s) => Math.max(1, s - 1))}
-              className={`px-4 py-2 rounded-xl border ${step === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-50'}`}
-              disabled={step === 1}
-            >
-              Back
-            </button>
-            {step < 5 ? (
-              <button
-                type="button"
-                onClick={() => validateStep(step) && setStep(step + 1)}
-                className={`px-5 py-2.5 rounded-xl text-white ${validateStep(step) ? 'bg-[#233447] hover:bg-[#1b2938]' : 'bg-slate-300 cursor-not-allowed'}`}
-              >
-                Continue
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={submitting || !validateStep(4)}
-                className={`px-5 py-2.5 rounded-xl text-white ${submitting ? 'bg-slate-400' : 'bg-[#233447] hover:bg-[#1b2938]'}`}
-              >
-                {submitting ? 'Submitting…' : 'Get My Quotes'}
-              </button>
+    function Field({ label, children, required }){
+      return (
+        <label className="block mb-4">
+          <div className="mb-1 text-sm font-medium text-slate-700">{label} {required && <span className="text-rose-600">*</span>}</div>
+          {children}
+        </label>
+      );
+    }
+
+    function Input(props){ return <input {...props} className={`w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-200 ${props.className || ''}`} /> }
+    function Select({ children, ...props }){ return <select {...props} className="w-full px-3 py-2 rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">{children}</select> }
+
+    function StepBasics({ form, update, states }){
+      return (
+        <div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Field label="First name" required><Input value={form.firstName} onChange={e=>update('firstName', e.target.value)} placeholder="Jane" /></Field>
+            <Field label="Last name" required><Input value={form.lastName} onChange={e=>update('lastName', e.target.value)} placeholder="Doe" /></Field>
+            <Field label="Email" required><Input type="email" value={form.email} onChange={e=>update('email', e.target.value)} placeholder="jane@example.com" /></Field>
+            <Field label="Phone" required><Input value={form.phone} onChange={e=>update('phone', e.target.value)} placeholder="(555) 555‑5555" /></Field>
+            <Field label="State" required>
+              <Select value={form.state} onChange={e=>update('state', e.target.value)}>
+                <option value="">Select state…</option>
+                {states.map(s => <option key={s} value={s}>{s}</option>)}
+              </Select>
+            </Field>
+            <Field label="ZIP" required><Input value={form.zip} onChange={e=>update('zip', e.target.value)} placeholder="12345" /></Field>
+            <Field label="Date of birth" required><Input type="date" value={form.dob} onChange={e=>update('dob', e.target.value)} /></Field>
+            <Field label="Sex" required>
+              <Select value={form.sex} onChange={e=>update('sex', e.target.value)}>
+                <option value="">Select…</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="nonbinary">Non-binary</option>
+                <option value="prefer_not">Prefer not to say</option>
+              </Select>
+            </Field>
+            <Field label="Smoker / nicotine in last 12 months?" required>
+              <Select value={form.smoker} onChange={e=>update('smoker', e.target.value)}>
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </Select>
+            </Field>
+            <Field label="Height" required>
+              <div className="grid grid-cols-2 gap-2">
+                <Input value={form.heightFt} onChange={e=>update('heightFt', e.target.value)} placeholder="ft" />
+                <Input value={form.heightIn} onChange={e=>update('heightIn', e.target.value)} placeholder="in" />
+              </div>
+            </Field>
+            <Field label="Weight (lbs)" required><Input value={form.weight} onChange={e=>update('weight', e.target.value)} placeholder="e.g., 165" /></Field>
+          </div>
+        </div>
+      );
+    }
+
+    function StepCoverage({ form, update, coverageOptions, termOptions, est }){
+      return (
+        <div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Field label="Coverage type" required>
+              <Select value={form.coverageType} onChange={e=>update('coverageType', e.target.value)}>
+                <option value="term">Term</option>
+                <option value="whole">Whole Life</option>
+                <option value="final">Final Expense</option>
+                <option value="not_sure">Not sure — show both</option>
+              </Select>
+            </Field>
+            {form.coverageType === 'term' && (
+              <Field label="Term length" required>
+                <Select value={form.termLength} onChange={e=>update('termLength', e.target.value)}>
+                  {termOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </Select>
+              </Field>
             )}
+            <Field label="Desired coverage amount" required>
+              <Select value={form.coverageAmount} onChange={e=>update('coverageAmount', e.target.value)}>
+                {coverageOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </Select>
+            </Field>
+            <Field label="Beneficiaries (optional)"><Input value={form.beneficiaries} onChange={e=>update('beneficiaries', e.target.value)} placeholder="e.g., 2 (spouse + child)" /></Field>
+            <Field label="Do you have existing coverage?"><Select value={form.existingCoverage} onChange={e=>update('existingCoverage', e.target.value)}><option value="no">No</option><option value="yes">Yes</option></Select></Field>
+            <Field label="When would you like coverage to start?"><Select value={form.startTimeline} onChange={e=>update('startTimeline', e.target.value)}><option>ASAP (this week)</option><option>30 days</option><option>60–90 days</option><option>Just comparing options</option></Select></Field>
           </div>
-
-          <Disclaimer />
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function Header({ est }) {
-  return (
-    <div className="text-center">
-      <div className="flex items-center justify-center gap-3">
-        <div className="rounded-full w-10 h-10 flex items-center justify-center text-white" style={{ backgroundColor: BRAND.primary }}>IS</div>
-        <div className="text-2xl font-bold" style={{ color: BRAND.primary }}>{BRAND.name}</div>
-      </div>
-      <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight">{BRAND.tagline}</h1>
-      <p className="mt-2 text-slate-600">Term, Whole & Final Expense • Licensed nationwide</p>
-      <div className="mt-4 inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-1.5 rounded-full text-sm">
-        <span className="font-medium">Estimated from ${est.monthly}/mo</span>
-        <span className="text-emerald-700">(illustrative)</span>
-      </div>
-    </div>
-  );
-}
-
-function Progress({ step }) {
-  const labels = ["Basics","Coverage","Health","Contact","Review"];
-  return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-        {labels.map((label, i) => (
-          <div key={label} className={`uppercase ${step - 1 >= i ? 'text-slate-700' : ''}`}>{label}</div>
-        ))}
-      </div>
-      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-        <div className="h-full bg-[#233447] transition-all" style={{ width: `${(step - 1) * 25}%` }} />
-      </div>
-    </div>
-  );
-}
-
-function Field({ label, children, required }) {
-  return (
-    <label className="block mb-4">
-      <div className="mb-1 text-sm font-medium text-slate-700">
-        {label} {required && <span className="text-rose-600">*</span>}
-      </div>
-      {children}
-    </label>
-  );
-}
-
-function Input(props) {
-  return <input {...props} className={`w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-200 ${props.className || ''}`} />;
-}
-
-function Select({ children, ...props }) {
-  return (
-    <select {...props} className="w-full px-3 py-2 rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-blue-200">
-      {children}
-    </select>
-  );
-}
-
-function StepBasics({ form, update, states }) {
-  return (
-    <div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <Field label="First name" required>
-          <Input value={form.firstName} onChange={(e) => update('firstName', e.target.value)} placeholder="Jane" />
-        </Field>
-        <Field label="Last name" required>
-          <Input value={form.lastName} onChange={(e) => update('lastName', e.target.value)} placeholder="Doe" />
-        </Field>
-        <Field label="Email" required>
-          <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="jane@example.com" />
-        </Field>
-        <Field label="Phone" required>
-          <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} placeholder="(555) 555‑5555" />
-        </Field>
-        <Field label="State" required>
-          <Select value={form.state} onChange={(e) => update('state', e.target.value)}>
-            <option value="">Select state…</option>
-            {states.map((s) => <option key={s} value={s}>{s}</option>)}
-          </Select>
-        </Field>
-        <Field label="ZIP" required>
-          <Input value={form.zip} onChange={(e) => update('zip', e.target.value)} placeholder="12345" />
-        </Field>
-        <Field label="Date of birth" required>
-          <Input type="date" value={form.dob} onChange={(e) => update('dob', e.target.value)} />
-        </Field>
-        <Field label="Sex" required>
-          <Select value={form.sex} onChange={(e) => update('sex', e.target.value)}>
-            <option value="">Select…</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="nonbinary">Non-binary</option>
-            <option value="prefer_not">Prefer not to say</option>
-          </Select>
-        </Field>
-        <Field label="Smoker / nicotine in last 12 months?" required>
-          <Select value={form.smoker} onChange={(e) => update('smoker', e.target.value)}>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </Select>
-        </Field>
-        <Field label="Height" required>
-          <div className="grid grid-cols-2 gap-2">
-            <Input value={form.heightFt} onChange={(e) => update('heightFt', e.target.value)} placeholder="ft" />
-            <Input value={form.heightIn} onChange={(e) => update('heightIn', e.target.value)} placeholder="in" />
+          <div className="mt-4 p-4 rounded-xl bg-slate-50 text-sm text-slate-700">
+            <div className="font-medium">Illustrative estimate</div>
+            <div>Based on your inputs, a rough estimate could be around <span className="font-semibold">${isNaN(est.monthly) ? '--' : est.monthly}/mo</span>. Actual rates depend on underwriting and carrier guidelines.</div>
           </div>
-        </Field>
-        <Field label="Weight (lbs)" required>
-          <Input value={form.weight} onChange={(e) => update('weight', e.target.value)} placeholder="e.g., 165" />
-        </Field>
-      </div>
-    </div>
-  );
-}
+        </div>
+      );
+    }
 
-function StepCoverage({ form, update, coverageOptions, termOptions, est }) {
-  return (
-    <div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <Field label="Coverage type" required>
-          <Select value={form.coverageType} onChange={(e) => update('coverageType', e.target.value)}>
-            <option value="term">Term</option>
-            <option value="whole">Whole Life</option>
-            <option value="final">Final Expense</option>
-            <option value="not_sure">Not sure — show both</option>
-          </Select>
-        </Field>
-        {form.coverageType === 'term' && (
-          <Field label="Term length" required>
-            <Select value={form.termLength} onChange={(e) => update('termLength', e.target.value)}>
-              {termOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </Select>
-          </Field>
-        )}
-        <Field label="Desired coverage amount" required>
-          <Select value={form.coverageAmount} onChange={(e) => update('coverageAmount', e.target.value)}>
-            {coverageOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </Select>
-        </Field>
-        <Field label="Beneficiaries (optional)">
-          <Input value={form.beneficiaries} onChange={(e) => update('beneficiaries', e.target.value)} placeholder="e.g., 2 (spouse + child)" />
-        </Field>
-        <Field label="Do you have existing coverage?">
-          <Select value={form.existingCoverage} onChange={(e) => update('existingCoverage', e.target.value)}>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </Select>
-        </Field>
-        <Field label="When would you like coverage to start?">
-          <Select value={form.startTimeline} onChange={(e) => update('startTimeline', e.target.value)}>
-            <option>ASAP (this week)</option>
-            <option>30 days</option>
-            <option>60–90 days</option>
-            <option>Just comparing options</option>
-          </Select>
-        </Field>
-      </div>
-      <div className="mt-4 p-4 rounded-xl bg-slate-50 text-sm text-slate-700">
-        <div className="font-medium">Illustrative estimate</div>
-        <div>Based on your inputs, a rough estimate could be around <span className="font-semibold">${isNaN(est.monthly) ? '--' : est.monthly}/mo</span>. Actual rates depend on underwriting and carrier guidelines.</div>
-      </div>
-    </div>
-  );
-}
+    function StepHealth({ form, update, conditionsList, highRiskHobbies, toggleArrayField }){
+      return (
+        <div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Field label="Any of the following conditions?">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {conditionsList.map(c => (
+                  <label key={c} className={`px-3 py-2 rounded-xl border cursor-pointer ${form.conditions.includes(c) ? 'bg-blue-50 border-blue-300' : ''}`}>
+                    <input type="checkbox" className="mr-2" checked={form.conditions.includes(c)} onChange={() => toggleArrayField('conditions', c)} />
+                    {c}
+                  </label>
+                ))}
+              </div>
+            </Field>
+            <Field label="Current medications (optional)"><Input value={form.meds} onChange={e=>update('meds', e.target.value)} placeholder="List any ongoing medications" /></Field>
+            <Field label="Any DUI in the last 5 years?"><Select value={form.dui5yr} onChange={e=>update('dui5yr', e.target.value)}><option value="no">No</option><option value="yes">Yes</option></Select></Field>
+            <Field label="Immediate family history of heart disease or cancer before age 60?"><Select value={form.familyHistory} onChange={e=>update('familyHistory', e.target.value)}><option value="no">No</option><option value="yes">Yes</option></Select></Field>
+            <Field label="High-risk occupation?"><Select value={form.highRiskJob} onChange={e=>update('highRiskJob', e.target.value)}><option value="no">No</option><option value="yes">Yes</option></Select></Field>
+            <Field label="Any high-risk hobbies?">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {highRiskHobbies.map(h => (
+                  <label key={h} className={`px-3 py-2 rounded-xl border cursor-pointer ${form.highRiskHobby.includes(h) ? 'bg-blue-50 border-blue-300' : ''}`}>
+                    <input type="checkbox" className="mr-2" checked={form.highRiskHobby.includes(h)} onChange={() => toggleArrayField('highRiskHobby', h)} />
+                    {h}
+                  </label>
+                ))}
+              </div>
+            </Field>
+          </div>
+        </div>
+      );
+    }
 
-function StepHealth({ form, update, conditionsList, highRiskHobbies, toggleArrayField }) {
-  return (
-    <div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <Field label="Any of the following conditions?">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {conditionsList.map((c) => (
-              <label key={c} className={`px-3 py-2 rounded-xl border cursor-pointer ${form.conditions.includes(c) ? 'bg-blue-50 border-blue-300' : ''}`}>
-                <input
-                  type="checkbox"
-                  className="mr-2"
-                  checked={form.conditions.includes(c)}
-                  onChange={() => toggleArrayField('conditions', c)}
-                />
-                {c}
+    function StepContact({ form, update }){
+      return (
+        <div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Field label="Preferred contact method" required>
+              <Select value={form.contactMethod} onChange={e=>update('contactMethod', e.target.value)}>
+                <option value="phone">Phone call</option>
+                <option value="sms">Text message</option>
+                <option value="email">Email</option>
+              </Select>
+            </Field>
+            <Field label="Best time to reach you" required>
+              <Select value={form.contactTime} onChange={e=>update('contactTime', e.target.value)}>
+                <option value="business hours">Business hours</option>
+                <option value="evenings">Evenings</option>
+                <option value="weekends">Weekends</option>
+              </Select>
+            </Field>
+            <Field label="Marketing consent (required)" required>
+              <label className="flex items-start gap-2 text-sm text-slate-700">
+                <input type="checkbox" checked={form.consent} onChange={e=>update('consent', e.target.checked)} />
+                <span>I agree to be contacted by phone, SMS, and email about life insurance options. Consent is not a condition of purchase. Message/data rates may apply.</span>
               </label>
-            ))}
+            </Field>
+            <Field label="Email updates (optional)"><label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" onChange={e=>update('newsletter', e.target.checked)} /><span>Send me rate tips and policy guides.</span></label></Field>
           </div>
-        </Field>
-        <Field label="Current medications (optional)">
-          <Input value={form.meds} onChange={(e) => update('meds', e.target.value)} placeholder="List any ongoing medications" />
-        </Field>
-        <Field label="Any DUI in the last 5 years?">
-          <Select value={form.dui5yr} onChange={(e) => update('dui5yr', e.target.value)}>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </Select>
-        </Field>
-        <Field label="Immediate family history of heart disease or cancer before age 60?">
-          <Select value={form.familyHistory} onChange={(e) => update('familyHistory', e.target.value)}>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </Select>
-        </Field>
-        <Field label="High-risk occupation?">
-          <Select value={form.highRiskJob} onChange={(e) => update('highRiskJob', e.target.value)}>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </Select>
-        </Field>
-        <Field label="Any high-risk hobbies?">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {highRiskHobbies.map((h) => (
-              <label key={h} className={`px-3 py-2 rounded-xl border cursor-pointer ${form.highRiskHobby.includes(h) ? 'bg-blue-50 border-blue-300' : ''}`}>
-                <input
-                  type="checkbox"
-                  className="mr-2"
-                  checked={form.highRiskHobby.includes(h)}
-                  onChange={() => toggleArrayField('highRiskHobby', h)}
-                />
-                {h}
-              </label>
-            ))}
+        </div>
+      );
+    }
+
+    function KeyValue({ k, v }){ return (<div className="flex justify-between py-2 border-b last:border-0"><div className="text-slate-600">{k}</div><div className="font-medium">{v}</div></div>); }
+
+    function StepReview({ form, est }){
+      const display = {
+        Name: `${form.firstName} ${form.lastName}`,
+        Email: form.email,
+        Phone: form.phone,
+        State: form.state,
+        ZIP: form.zip,
+        "DOB (age)": `${form.dob} (${ageStr(form.dob)})`,
+        Sex: pretty(form.sex),
+        Smoker: pretty(form.smoker),
+        Height: `${form.heightFt}ft ${form.heightIn}in`,
+        Weight: `${form.weight} lbs`,
+        Coverage: `${pretty(form.coverageType)} — $${Number(form.coverageAmount).toLocaleString()}${form.coverageType === 'term' ? ` / ${form.termLength} yrs` : ''}`,
+        Beneficiaries: form.beneficiaries || '—',
+        Existing: pretty(form.existingCoverage),
+        Timeline: form.startTimeline,
+        Estimate: `$${isNaN(est.monthly) ? '--' : est.monthly}/mo (illustrative)`,
+      };
+      return (
+        <div>
+          <div className="rounded-xl border p-4 bg-slate-50">
+            {Object.entries(display).map(([k,v]) => (<KeyValue key={k} k={k} v={v} />))}
           </div>
-        </Field>
-      </div>
-    </div>
-  );
-}
+          <p className="mt-3 text-sm text-slate-600">We will match your info with options from multiple carriers. A licensed advisor will confirm final eligibility and rates.</p>
+        </div>
+      );
+    }
 
-function StepContact({ form, update }) {
-  return (
-    <div>
-      <div className="grid md:grid-cols-2 gap-4">
-        <Field label="Preferred contact method" required>
-          <Select value={form.contactMethod} onChange={(e) => update('contactMethod', e.target.value)}>
-            <option value="phone">Phone call</option>
-            <option value="sms">Text message</option>
-            <option value="email">Email</option>
-          </Select>
-        </Field>
-        <Field label="Best time to reach you" required>
-          <Select value={form.contactTime} onChange={(e) => update('contactTime', e.target.value)}>
-            <option value="business hours">Business hours</option>
-            <option value="evenings">Evenings</option>
-            <option value="weekends">Weekends</option>
-          </Select>
-        </Field>
-        <Field label="Marketing consent (required)" required>
-          <label className="flex items-start gap-2 text-sm text-slate-700">
-            <input type="checkbox" checked={form.consent} onChange={(e) => update('consent', e.target.checked)} />
-            <span>
-              I agree to be contacted by phone, SMS, and email about life insurance options. Consent is not a condition of purchase. Message/data rates may apply.
-            </span>
-          </label>
-        </Field>
-        <Field label="Email updates (optional)">
-          <label className="flex items-center gap-2 text-sm text-slate-700">
-            <input type="checkbox" onChange={(e) => update('newsletter', e.target.checked)} />
-            <span>Send me rate tips and policy guides.</span>
-          </label>
-        </Field>
-      </div>
-    </div>
-  );
-}
+    function ageStr(dob){
+      const a = (function(){
+        const d = new Date(dob);
+        if (Number.isNaN(d.getTime())) return null;
+        const today = new Date();
+        let age = today.getFullYear() - d.getFullYear();
+        const m = today.getMonth() - d.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+        return age;
+      })();
+      return a === null ? "—" : `${a}`;
+    }
 
-function KeyValue({ k, v }) {
-  return (
-    <div className="flex justify-between py-2 border-b last:border-0">
-      <div className="text-slate-600">{k}</div>
-      <div className="font-medium">{v}</div>
-    </div>
-  );
-}
+    function Disclaimer(){
+      return (
+        <div className="mt-8 text-xs text-slate-500 space-y-2">
+          <p>By clicking Continue or Get My Quotes, you agree to our <a href="#" className="underline">Terms</a> and <a href="#" className="underline">Privacy Policy</a> and consent to be contacted by a licensed insurance representative at the number and email provided. Consent is not a condition of purchase. Message and data rates may apply.</p>
+          <p>Quotes and estimates shown are for illustration only and do not constitute an offer of insurance. Final eligibility and rates are determined by carriers based on underwriting.</p>
+        </div>
+      );
+    }
 
-function StepReview({ form, est }) {
-  const display = {
-    Name: `${form.firstName} ${form.lastName}`,
-    Email: form.email,
-    Phone: form.phone,
-    State: form.state,
-    ZIP: form.zip,
-    "DOB (age)": `${form.dob} (${ageStr(form.dob)})`,
-    Sex: pretty(form.sex),
-    Smoker: pretty(form.smoker),
-    Height: `${form.heightFt}ft ${form.heightIn}in`,
-    Weight: `${form.weight} lbs`,
-    Coverage: `${pretty(form.coverageType)} — $${Number(form.coverageAmount).toLocaleString()}${form.coverageType === 'term' ? ` / ${form.termLength} yrs` : ''}`,
-    Beneficiaries: form.beneficiaries || '—',
-    Existing: pretty(form.existingCoverage),
-    Timeline: form.startTimeline,
-    Estimate: `$${isNaN(est.monthly) ? '--' : est.monthly}/mo (illustrative)`,
-  };
-  return (
-    <div>
-      <div className="rounded-xl border p-4 bg-slate-50">
-        {Object.entries(display).map(([k, v]) => (
-          <KeyValue key={k} k={k} v={v} />
-        ))}
-      </div>
-      <p className="mt-3 text-sm text-slate-600">We will match your info with options from multiple carriers. A licensed advisor will confirm final eligibility and rates.</p>
-    </div>
-  );
-}
-
-function ageStr(dob) {
-  const a = (function() {
-    const d = new Date(dob);
-    if (Number.isNaN(d.getTime())) return null;
-    const today = new Date();
-    let age = today.getFullYear() - d.getFullYear();
-    const m = today.getMonth() - d.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
-    return age;
-  })();
-  return a === null ? "—" : `${a}`;
-}
-
-function pretty(v) {
-  if (v === "term") return "Term";
-  if (v === "whole") return "Whole Life";
-  if (v === "final") return "Final Expense";
-  if (v === "not_sure") return "Not sure";
-  if (v === "yes") return "Yes";
-  if (v === "no") return "No";
-  if (v === "female") return "Female";
-  if (v === "male") return "Male";
-  if (v === "nonbinary") return "Non-binary";
-  if (v === "prefer_not") return "Prefer not to say";
-  return v;
-}
-
-function Disclaimer() {
-  return (
-    <div className="mt-8 text-xs text-slate-500 space-y-2">
-      <p>
-        By clicking Continue or Get My Quotes, you agree to our <a href="#" className="underline">Terms</a> and <a href="#" className="underline">Privacy Policy</a> and consent to be contacted by a licensed insurance representative at the number and email provided. Consent is not a condition of purchase. Message and data rates may apply.
-      </p>
-      <p>
-        Quotes and estimates shown are for illustration only and do not constitute an offer of insurance. Final eligibility and rates are determined by carriers based on underwriting.
-      </p>
-    </div>
-  );
-}
+    // ---------- Render ----------
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<LifeInsuranceLeadForm />);
+  </script>
+</body>
+</html>
