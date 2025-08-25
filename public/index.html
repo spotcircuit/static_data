@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
 
+const BRAND = { name: "Insurance Strategies", primary: "#233447", accent: "#0EA5E9", tagline: "Compare top carriers. Get your rate in minutes." };
+
 // Life Insurance Lead Form – multi‑step, ad-landing ready
 // TailwindCSS only; self-contained. No external UI imports required.
 // Notes:
@@ -187,7 +189,7 @@ export default function LifeInsuranceLeadForm() {
             <StepBasics form={form} update={update} states={states} />
           )}
           {step === 2 && (
-            <StepCoverage form={form} update={update} coverageOptions={coverageOptions} termOptions={termOptions} />
+            <StepCoverage form={form} update={update} coverageOptions={coverageOptions} termOptions={termOptions} est={est} />
           )}
           {step === 3 && (
             <StepHealth form={form} update={update} conditionsList={conditionsList} highRiskHobbies={highRiskHobbies} toggleArrayField={toggleArrayField} />
@@ -212,7 +214,7 @@ export default function LifeInsuranceLeadForm() {
               <button
                 type="button"
                 onClick={() => validateStep(step) && setStep(step + 1)}
-                className={`px-5 py-2.5 rounded-xl text-white ${validateStep(step) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-300 cursor-not-allowed'}`}
+                className={`px-5 py-2.5 rounded-xl text-white ${validateStep(step) ? 'bg-[#233447] hover:bg-[#1b2938]' : 'bg-slate-300 cursor-not-allowed'}`}
               >
                 Continue
               </button>
@@ -220,7 +222,7 @@ export default function LifeInsuranceLeadForm() {
               <button
                 type="submit"
                 disabled={submitting || !validateStep(4)}
-                className={`px-5 py-2.5 rounded-xl text-white ${submitting ? 'bg-slate-400' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+                className={`px-5 py-2.5 rounded-xl text-white ${submitting ? 'bg-slate-400' : 'bg-[#233447] hover:bg-[#1b2938]'}`}
               >
                 {submitting ? 'Submitting…' : 'Get My Quotes'}
               </button>
@@ -237,12 +239,12 @@ export default function LifeInsuranceLeadForm() {
 function Header({ est }) {
   return (
     <div className="text-center">
-      <div className="inline-flex items-center gap-3 bg-white shadow px-4 py-2 rounded-full">
-        <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
-        <div className="text-sm text-slate-600">Licensed in all 50 states • Fast, no-obligation quotes</div>
+      <div className="flex items-center justify-center gap-3">
+        <div className="rounded-full w-10 h-10 flex items-center justify-center text-white" style={{ backgroundColor: BRAND.primary }}>IS</div>
+        <div className="text-2xl font-bold" style={{ color: BRAND.primary }}>{BRAND.name}</div>
       </div>
-      <h1 className="mt-4 text-3xl md:text-4xl font-bold tracking-tight">Find Your Life Insurance Rate</h1>
-      <p className="mt-2 text-slate-600">Answer a few questions—get options across top carriers. No medical exam in many cases.</p>
+      <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight">{BRAND.tagline}</h1>
+      <p className="mt-2 text-slate-600">Term, Whole & Final Expense • Licensed nationwide</p>
       <div className="mt-4 inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-1.5 rounded-full text-sm">
         <span className="font-medium">Estimated from ${est.monthly}/mo</span>
         <span className="text-emerald-700">(illustrative)</span>
@@ -261,7 +263,7 @@ function Progress({ step }) {
         ))}
       </div>
       <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-        <div className="h-full bg-blue-600 transition-all" style={{ width: `${(step - 1) * 25}%` }} />
+        <div className="h-full bg-[#233447] transition-all" style={{ width: `${(step - 1) * 25}%` }} />
       </div>
     </div>
   );
@@ -347,7 +349,7 @@ function StepBasics({ form, update, states }) {
   );
 }
 
-function StepCoverage({ form, update, coverageOptions, termOptions }) {
+function StepCoverage({ form, update, coverageOptions, termOptions, est }) {
   return (
     <div>
       <div className="grid md:grid-cols-2 gap-4">
